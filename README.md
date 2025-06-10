@@ -38,16 +38,56 @@ y_pred = model.predict(X)
 
 ---
 
-### 2. 🏭 Industry-Level Correlation Analysis
+### 2. Industry-Level Correlation Analysis
 We examine how different sectors respond to surprise indices.
 
 
 
 ---
 
-### 3. 🌳 Feature Importance via Random Forest
+### 3. Feature Importance via Random Forest
 We apply Random Forest to further assess variable importance and capture nonlinear relationships.
+````python
+X_cols = [
+    "eps",
+    "current_ratio",
+    "surprised_index_eps",
+    "surprised_index_current_ratio",
+    "surprised_index_gross_profit",
+    "surprised_index_operating_cashflow",
+    "surprised_index_roa_beforetta",
+    "industry_dummy"
+]
 
+# Step 1: 轉換目標變數為三分類 
+# 分成：下跌（0）、持平（1）、上漲（2）
+quantiles = df["this_season_return"].quantile([0.33, 0.66]).values
+def classify_return(x):
+    if x <= quantiles[0]:
+        return 0  # 下跌
+    elif x <= quantiles[1]:
+        return 1  # 持平
+    else:
+        return 2  # 上漲
+
+df["y_class"] = df["this_season_return"].apply(classify_return)
+
+# Step 2: 建立 X 和 y
+X = df[X_cols]
+y = df["y_class"]
+
+df_model = pd.concat([X, y, df["this_season_return"]], axis=1).dropna()
+X = df_model[X_cols]
+y = df_model["y_class"]
+
+# Step 3: 切分資料 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.35)
+
+# Step 4建立並訓練分類模型
+clf = RandomForestClassifier(n_estimators=100, min_samples_leaf=3) #min_sample_leaf設3防止overfitting
+clf.fit(X_train, y_train)
+
+````
 - **Variable Importance Plot**\
   ![Variable Importance](variable_impo.png)
 
