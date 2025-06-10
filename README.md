@@ -38,7 +38,7 @@ y_pred = model.predict(X)
 ### 2. 🏭 Industry-Level Correlation Analysis
 We examine how different sectors respond to surprise indices.
 
-#![Industry Correlation](industry_corr.png)
+
 
 ---
 
