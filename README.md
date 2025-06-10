@@ -31,7 +31,10 @@ model.fit(X, y)
 # 預測
 y_pred = model.predict(X)
 ````
+-**預測與真實的相關係數 r = 0.1007, p-value = 8.374e-91**\
 ![Linear Model Output](output.png)
+
+
 
 ---
 
@@ -45,10 +48,10 @@ We examine how different sectors respond to surprise indices.
 ### 3. 🌳 Feature Importance via Random Forest
 We apply Random Forest to further assess variable importance and capture nonlinear relationships.
 
-- **Variable Importance Plot**
+- **Variable Importance Plot**\
   ![Variable Importance](variable_impo.png)
 
-- **Feature Heatmap**
+- **Feature Heatmap**\
   ![Random Forest Heatmap](randomforest_heat.png)
 
 ---
