@@ -66,8 +66,14 @@ Using the above signals, we construct multiple strategies based on different per
 
 ---
 
-### 5. ⚖️ Final Strategy: Long-Short Top/Bottom 20%
-We select the **top 20%** and **bottom 20%** ranked stocks to build a market-neutral long-short strategy.
+## ⚖️ Final Strategy: Long-Short Top/Bottom 20%
+
+We split the timeline into training and testing periods to ensure robustness:
+
+- **Training period**: 2011–2021/10  
+- **Testing period**: 2021/11–2025/01
+
+We select the **top 20%** and **bottom 20%** ranked stocks to build a **market-neutral long-short strategy** in both periods.
 ````python
 # 初始化
 returns_80    = pd.Series(dtype='float64')
@@ -143,15 +149,16 @@ Max drawdown during the backtest period.
 
 ---
 
-## 📊 Key Metrics (fill in manually)
 
-| Metric          | Value    |
-|-----------------|----------|
-| Annual Return   | XX.X %   |
-| Max Drawdown    | XX.X %   |
-| Sharpe Ratio    | X.XX     |
-| Win Rate        | XX %     |
-| Backtest Period | 20XX–20XX |
+
+#### 📈 Final Strategy Backtest (Train vs. Test)
+
+| Metric                | Train (2011–2021/10) | Test (2021/11–2025/01) |
+|------------------------|----------------------|-------------------------|
+| Annualized Return      | 0.0938               | 0.1699                  |
+| Annualized Volatility  | 0.0580               | 0.0694                  |
+| Sharpe Ratio           | 1.5733               | 2.2957                  |
+| Cumulative Return      | 0.2950               | 4.5512                  |
 
 ---
 
