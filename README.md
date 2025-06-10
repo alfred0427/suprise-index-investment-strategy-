@@ -180,13 +180,14 @@ for i in date:
 ## 2. Final Strategy: Long-Short Top/Bottom 20%
 
 We select the **top 20%** and **bottom 20%** ranked stocks to build a **market-neutral long-short strategy** in both periods.
--step 1.
+
+- step 1.
 We split the timeline into training and testing periods to ensure robustness:
 
-- **Training period**: 2011–2021/10  
-- **Testing period**: 2021/11–2025/01
+    - **Training period**: 2011–2021/10  
+    - **Testing period**: 2021/11–2025/01
   
--用training period 資料重新訓練
+- 用training period 資料重新訓練
 ````python
 cd_train = cd.loc[cd["date"]<"2022-01"] #訓練資料 2011~2021/10
 
@@ -203,7 +204,7 @@ X2 = cd[X_cols]
 y_pred = model.predict(X2)
 cd["return_pred"] = y_pred
 ````
--step 2.
+- step 2.
 回測策略 (參考3-1的程式碼)
 
 - **Final Strategy Backtest**\
