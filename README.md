@@ -31,7 +31,7 @@ model.fit(X, y)
 # 預測
 y_pred = model.predict(X)
 ````
--**預測與真實的相關係數 r = 0.1007, p-value = 8.374e-91**\
+- **預測與真實的相關係數 r = 0.1007, p-value = 8.374e-91**\
 ![Linear Model Output](output.png)
 
 
@@ -210,7 +210,7 @@ cd["return_pred"] = y_pred
   ![Strategy Performance](strat_perform.png)
 
 ---
--Max drawdown\
+- Maximum drawdown 
 
 ![Drawdown](drawdown.png)
 
