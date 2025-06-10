@@ -88,9 +88,13 @@ clf = RandomForestClassifier(n_estimators=100, min_samples_leaf=3) #min_sample_l
 clf.fit(X_train, y_train)
 
 ````
-- **Variable Importance Plot**\
-  ![Variable Importance](variable_impo.png)
 
+可以看到f-score顯著大於0.33 表示有一定預測能力。而變數重要性與線性模型結果一致，可以確認營收指標的預測能力較為佳。
+- **Random Forest results**\
+  ![Random Forest Model results](image.png)
+  ![Variable Importance](variable_impo.png)
+  
+進一步從分類熱度圖可以看出，隨機森林模型在捕捉預測優質股票的表現比線性模型較佳。
 - **Feature Heatmap**\
   ![Random Forest Heatmap](randomforest_heat.png)
 
