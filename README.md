@@ -1,10 +1,16 @@
 #  Surprise Index Investment Strategy
 
 This is a quantitative investment strategy driven by the surpriseness of company's key financial index, using both linear and machine learning model to build an risk neutral stock seletion strategy
-
 ## 🧭 Strategy Workflow
+## 一、策略介紹
+我們將財報的驚奇程度用六個關鍵財務指標來衡量，
 
-## 二、相關性檢驗
+驚奇指數定義 = 本季與去年度同季財務指標變化量 − 上季財報公布日後一天⾄財報⽇前一天的股價報酬率
+
+## 二、資料前處理
+
+
+## 三、相關性檢驗
 ### 1. 📉 Linear Model for Initial Variable Filtering
 We first use a simple linear regression model to detect preliminary relationships between surprise indices and stock/sector returns.
 ````python
@@ -181,7 +187,7 @@ for i in date:
 
 We select the **top 20%** and **bottom 20%** ranked stocks to build a **market-neutral long-short strategy** in both periods.
 
-#### - step 1.
+- #### step 1.
 We split the timeline into training and testing periods to ensure robustness:
 
     - **Training period**: 2011–2021/10  
@@ -207,7 +213,7 @@ cd["return_pred"] = y_pred
 
 
 
-#### - step 2.
+- #### step 2.
 回測策略 (參考3-1的程式碼)
 
 - **Final Strategy Backtest**\
