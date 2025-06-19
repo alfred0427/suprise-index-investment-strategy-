@@ -1,22 +1,22 @@
-#  Surprise Index Investment Strategy
+# Surprise Index Investment Strategy
+## 前言
+   財務報表公布後常出現「超額報酬遞延」（post-earnings announcement drift, PEAD）現象。Bernard 與 Thomas（1989）首先證實，市場對財報資訊反應遲滯，導致利多（利空）公司在公布後數月至一年內持續上漲（下跌）。台灣市場亦有相似證據；陳柏濤（2012）發現 PEAD 在中小型股尤為顯著。然而，過去研究多以 EPS surprise 或分析師預估誤差衡量「驚奇」，較少關注企業營運面的結構性訊號。
+   本研究借鏡 Piotroski F-score，將「驚奇」概念擴充為五大關鍵財務指標──稅前 ROA、EPS、毛利率、營運現金流及流動比率──之季對季變動，並扣除財報前一季的股價先行反應，以更貼近「市場預期落差」。我們將此綜合衡量稱為 驚奇指數（Surprise Index）。
 
+主要發現如下：
+- 1.驚奇效應持續
+無論線性回歸或隨機森林模型，五項驚奇指標對下一季股價均具顯著解釋力，其中「獲利相關指標」（EPS、毛利率、稅前 ROA）最為關鍵。
 
-## 一、策略介紹
-在這次研究中，我們發現財務報表驚奇程度對於個股超額報酬的遞延性，並用此特性衍生出一個量化因子投資策略。運用多元回歸、隨機森林模型來動態搭配每一季所持有股票多空組合，並在訓練期跟測試期都獲得優於市場的報酬。
-This is a quantitative investment strategy driven by the surpriseness of company's key financial index, using both linear and machine learning model to build an risk neutral stock seletion strategy
+- 2.非線性模型優勢
+隨機森林在分類正／負報酬時的準確度及 F-score 皆優於線性模型，顯示驚奇指標與股價之間存在非線性或交互效果。
 
-以下是策略關鍵變數的衡量方法:
-參考 _Piotroski F-score_，我們將財報的驚奇程度用六個關鍵財務指標來衡量，分別是稅前ROA、EPS、Gross profit、Operatiin Cash flow、current ratio.
-
-並且分別進行以下計算轉換為驚奇指數:   
-   - _驚奇指數 = 本季與去年度同季財務指標變化量 − 上季財報公布日後一天⾄財報⽇前一天的股價報酬率_
-
-在計算出五個財務指標的驚奇指標後，我們將用**多元回歸模型**和**隨機森林模型**來給予該季財報驚奇分數。
+- 3.量化多空策略表現亮眼
+以驚奇指數前 20% 與後 20% 構建市場中性的 多頭-空頭 組合，經 2011–2025 年回測，年化夏普值在測試期達 2.30，累積報酬顯著超越大盤。
 
 ## 二、資料前處理
-
+### 資料來源：TEJ(上市櫃財務報表資料、公司基本資料)、yfinance(股價資料)
 ### 函式庫
-````python
+```python
 import yfinance as yf
 import statsmodels.api as sm
 import numpy as np
@@ -24,16 +24,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from scipy.stats import pearsonr
-from tqdm import tqdm 
+from tqdm import tqdm
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
 import seaborn as sns
-````
-### 物件導向程式設計：驚奇指標計算class
+```
 
-這個 SurpriseAnalyzer 類別是一個針對台灣股票進行財報「驚奇指標分析」的工具。給定一家公司名稱，它會自動讀取相關財報數據（如 EPS、毛利率、ROA 等）與股價，計算財報公布前後的季報酬，並標準化各指標變動，進一步推算每季的「驚奇指標」──即財報表現與市場預期落差。
-````python
+### 物件導向程式設計：驚奇指標計算 class
+
+SurpriseAnalyzer 類別是一個針對台灣股票進行財報「驚奇指標分析」的工具。給定一家公司名稱，它會自動讀取相關財報數據（如 EPS、毛利率、ROA 等）與股價，計算財報公布前後的季報酬，並標準化各指標變動，進一步推算每季的「驚奇指標」── 即財報表現與市場預期落差。
+參考 _Piotroski F-score_，我們將財報的驚奇程度用六個關鍵財務指標來衡量，分別是稅前 ROA、EPS、Gross profit、Operatiin Cash flow、current ratio.並且分別進行以下計算轉換為驚奇指數:
+- _驚奇指數 = 本季與去年度同季財務指標變化量 − 上季財報公布日後一天⾄財報⽇前一天的股價報酬率_
+  
+```python
 
 class SurpriseAnalyzer:
     def __init__(self, stock_name):
@@ -48,7 +52,7 @@ class SurpriseAnalyzer:
         self._load_stock_code()
         self._load_price_data()
         self._cal_this_next_season_return()
-    
+
     def __repr__(self):
         """
         顯示分析物件的基本資訊與狀態
@@ -163,30 +167,35 @@ class SurpriseAnalyzer:
         self.df["surprised_index_gross_profit"] = self._calculate_surprise_index(self.df, "gross_profit")
         self.df["surprised_index_roa_beforetta"] = self._calculate_surprise_index(self.df, "roa_beforetta")
         return self.df
-    
 
-````
+
+```
+
 ### 物件輸出範例：以台泥為例
-如果我們在輸入台泥，SurpriseAnalyzer會根據上述邏輯計算出台泥 2011-Q3 到 2024-Q3 每一季的五個驚奇指標 (本研究特徵變數)、和下季股價報酬率(目標變數)，並回傳一個以財報公布次數為樣本數的dataframe。這樣做的好處是可以先忽視每家上市櫃公司的異質性，方便做統計檢驗。
+
+如果我們在輸入台泥，SurpriseAnalyzer 會根據上述邏輯計算出台泥 2011-Q3 到 2024-Q3 每一季的五個驚奇指標 (本研究特徵變數)、和下季股價報酬率(目標變數)，並回傳一個以財報公布次數為樣本數的 dataframe。這樣做的好處是可以先忽視每家上市櫃公司的異質性，方便做統計檢驗。
 其他類別變數包含：公司名稱、產業別、子產業別，方便日後子樣本回歸和回測使用。
-````python
+
+```python
 analyzer = SurpriseAnalyzer("台泥")
 result = analyzer.analyze()
-````
-| index | stock | date       | industry | sub_industry | past_season_return | this_season_return | capital         | surprised_index_eps | surprised_index_gross_profit | surprised_index_roa_beforetta | surprised_index_operating_cashflow | surprised_index_current_ratio | observed_period     |
-|-------|-------|------------|----------|---------------|--------------------|---------------------|------------------|----------------------|-------------------------------|-------------------------------|-------------------------------|----------------------------|----------------------|
-| 306   | 台泥  | 2011-11-08 | 水泥製造 | 水泥製造      | -0.051613          | -0.083555           | 77,511,817,420   | 0.607769             | 0.760453                      | 0.426872                      | 1.46689                      | 0.25609                    | Price Close High Low ... |
-| 307   | 台泥  | 2012-03-30 | 水泥製造 | 水泥製造      | -0.062415          | 0.211845            | 77,511,817,420   | 0.177009             | -0.237003                     | 0.183163                      | -0.647645                    | 0.208716                   | Price Close High Low ... |
-| 308   | 台泥  | 2013-05-15 | 水泥製造 | 水泥製造      | 0.218931           | 0.038461            | 77,511,817,420   | -1.796884            | -2.58713                      | -2.33914                      | -1.083479                    | -3.069321                  | Price Close High Low ... |
-| 309   | 台泥  | 2013-08-14 | 水泥製造 | 水泥製造      | 0.022766           | 0.053985            | 77,511,817,420   | -0.169579            | -0.745016                     | -1.62934                      | -0.745731                    | -0.956139                  | Price Close High Low ... |
-| 313   | 台泥  | 2013-08-14 | 水泥製造 | 水泥製造      | 0.022766           | 0.053985            | 77,511,817,420   | 0.192859             | 0.661097                      | 0.793124                      | 0.802544                     | -0.196808                  | Price Close High Low ... |
-| 314   | 台泥  | 2013-11-14 | 水泥製造 | 水泥製造      | 0.059431           | 0.161928            | 77,511,817,420   | 0.987591             | 0.825564                      | 1.283005                      | -0.709972                    | -1.556281                  | Price Close High Low ... |
-| 315   | 台泥  | 2014-03-31 | 水泥製造 | 水泥製造      | 0.107185           | -0.042283           | 77,511,817,420   | -0.29677             | -0.76883                      | 0.328945                      | -1.251529                    | -0.902194                  | Price Close High Low ... |
-| 316   | 台泥  | 2014-05-15 | 水泥製造 | 水泥製造      | -0.052301          | 0.091589            | 77,511,817,420   | 1.219027             | 1.450653                      | 1.479293                      | 1.943531                     | 0.844266                   | Price Close High Low ... |
-| 317   | 台泥  | 2014-08-14 | 水泥製造 | 水泥製造      | 0.053538           | -0.016393           | 77,511,817,420   | 0.263899             | 0.034964                      | 0.569898                      | -1.079002                    | -0.686497                  | Price Close High       |
+```
+
+| index | stock | date       | industry | sub_industry | past_season_return | this_season_return | capital        | surprised_index_eps | surprised_index_gross_profit | surprised_index_roa_beforetta | surprised_index_operating_cashflow | surprised_index_current_ratio | observed_period          |
+| ----- | ----- | ---------- | -------- | ------------ | ------------------ | ------------------ | -------------- | ------------------- | ---------------------------- | ----------------------------- | ---------------------------------- | ----------------------------- | ------------------------ |
+| 306   | 台泥  | 2011-11-08 | 水泥製造 | 水泥製造     | -0.051613          | -0.083555          | 77,511,817,420 | 0.607769            | 0.760453                     | 0.426872                      | 1.46689                            | 0.25609                       | Price Close High Low ... |
+| 307   | 台泥  | 2012-03-30 | 水泥製造 | 水泥製造     | -0.062415          | 0.211845           | 77,511,817,420 | 0.177009            | -0.237003                    | 0.183163                      | -0.647645                          | 0.208716                      | Price Close High Low ... |
+| 308   | 台泥  | 2013-05-15 | 水泥製造 | 水泥製造     | 0.218931           | 0.038461           | 77,511,817,420 | -1.796884           | -2.58713                     | -2.33914                      | -1.083479                          | -3.069321                     | Price Close High Low ... |
+| 309   | 台泥  | 2013-08-14 | 水泥製造 | 水泥製造     | 0.022766           | 0.053985           | 77,511,817,420 | -0.169579           | -0.745016                    | -1.62934                      | -0.745731                          | -0.956139                     | Price Close High Low ... |
+| 313   | 台泥  | 2013-08-14 | 水泥製造 | 水泥製造     | 0.022766           | 0.053985           | 77,511,817,420 | 0.192859            | 0.661097                     | 0.793124                      | 0.802544                           | -0.196808                     | Price Close High Low ... |
+| 314   | 台泥  | 2013-11-14 | 水泥製造 | 水泥製造     | 0.059431           | 0.161928           | 77,511,817,420 | 0.987591            | 0.825564                     | 1.283005                      | -0.709972                          | -1.556281                     | Price Close High Low ... |
+| 315   | 台泥  | 2014-03-31 | 水泥製造 | 水泥製造     | 0.107185           | -0.042283          | 77,511,817,420 | -0.29677            | -0.76883                     | 0.328945                      | -1.251529                          | -0.902194                     | Price Close High Low ... |
+| 316   | 台泥  | 2014-05-15 | 水泥製造 | 水泥製造     | -0.052301          | 0.091589           | 77,511,817,420 | 1.219027            | 1.450653                     | 1.479293                      | 1.943531                           | 0.844266                      | Price Close High Low ... |
+| 317   | 台泥  | 2014-08-14 | 水泥製造 | 水泥製造     | 0.053538           | -0.016393          | 77,511,817,420 | 0.263899            | 0.034964                     | 0.569898                      | -1.079002                          | -0.686497                     | Price Close High         |
 
 ### 跑回圈計算所有上市櫃公司驚奇指標
-````python
+
+```python
 # 載入股票名稱清單
 df = pd.read_csv("C:/Users/USER/Downloads/2010至今eps.csv")
 concat_df = pd.DataFrame()
@@ -200,14 +209,19 @@ for stock_name in tqdm(df["名稱"], desc="分析進度"):
         concat_df = pd.concat([concat_df, result])
     except Exception as e:
         print(f" {stock_name} 發生錯誤：{e}")
-````
+```
+
 ### 變數分布型態
+
 ![Variable distribution](distriburion.png)
 
 ## 三、相關性檢驗
+
 ### 1. 📉 Linear Model for Initial Variable Filtering
+
 We first use a simple linear regression model to detect preliminary relationships between surprise indices and stock/sector returns.
-````python
+
+```python
 # 定義用來的特徵欄位
 X_cols = [
     "surprised_index_gross_profit",
@@ -230,27 +244,29 @@ model.fit(X, y)
 
 # 預測
 y_pred = model.predict(X)
-````
-![Linear Model Output](output.png)  
+```
 
--  **預測與真實的相關係數 r = 0.1007, p-value = 8.374e-91**\
-  
+![Linear Model Output](output.png)
+
+- **預測與真實的相關係數 r = 0.1007, p-value = 8.374e-91**\
 
 ### 2.各變數相關性
-![Variables corr](muti_variable.png)  
+
+![Variables corr](muti_variable.png)
 
 ---
 
 ### 3. Industry-Level Correlation Analysis
+
 We examine how different sectors respond to surprise indices.
-
-
 
 ---
 
 ### 4. Feature Importance via Random Forest
+
 We apply Random Forest to further assess variable importance and capture nonlinear relationships.
-````python
+
+```python
 X_cols = [
     "eps",
     "current_ratio",
@@ -262,7 +278,7 @@ X_cols = [
     "industry_dummy"
 ]
 
-# Step 1: 轉換目標變數為三分類 
+# Step 1: 轉換目標變數為三分類
 # 分成：下跌（0）、持平（1）、上漲（2）
 quantiles = df["this_season_return"].quantile([0.33, 0.66]).values
 def classify_return(x):
@@ -283,43 +299,47 @@ df_model = pd.concat([X, y, df["this_season_return"]], axis=1).dropna()
 X = df_model[X_cols]
 y = df_model["y_class"]
 
-# Step 3: 切分資料 
+# Step 3: 切分資料
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.35)
 
 # Step 4建立並訓練分類模型
 clf = RandomForestClassifier(n_estimators=100, min_samples_leaf=3) #min_sample_leaf設3防止overfitting
 clf.fit(X_train, y_train)
 
-````
-
+```
 
 - **Random Forest results**\
   ![Random Forest Model results](image.png)\
-  可以看到f-score顯著大於0.33 表示有一定預測能力。
+  可以看到 f-score 顯著大於 0.33 表示有一定預測能力。
 - **Variable Importance**\
   ![Variable Importance](variable_impo.png)\
   與線性模型結果一致，可以確認營收指標的預測能力較為佳。
-  
 
 - **Feature Heatmap**\
   ![Random Forest Heatmap](randomforest_heat.png)\
   進一步從分類熱度圖可以看出，隨機森林模型在捕捉預測優質股票的表現比線性模型較佳。
 
-### 5.模型比較
-- 預測值前25% vs 後25%
-````python
+### 5.模型比較：預測值前 25% vs 後 25%
 
-````
-![Muti Linear Model results](kr.png)\
-![Random Forest Model results](rdf.png)\
+```python
+
+```
+
+- Muti Linear Model\
+  ![Muti Linear Model results](lr.png)
+- Random Forest Model\
+  ![Random Forest Model results](rdf.png)
 
 ---
 
 ## 三、策略建構
+
 ### 1. Simple screening
+
 在驗證驚奇指標對於單季報酬有預測能力以後，我們先使用不同預測分數的門檻值來動態更新投資組合。\
-這邊用for loop跑過回測期間的每一天，如果當天有公司公布財務報表，以下程式碼就會用他對應的驚奇指數來判斷是否將其加入投資組合，每次加入為期一季。最後再簡單平均當天持有的所有股票報酬率。
-````python
+這邊用 for loop 跑過回測期間的每一天，如果當天有公司公布財務報表，以下程式碼就會用他對應的驚奇指數來判斷是否將其加入投資組合，每次加入為期一季。最後再簡單平均當天持有的所有股票報酬率。
+
+```python
 # 初始化
 returns_80    = pd.Series(dtype='float64')
 returns_50abv = pd.Series(dtype='float64')
@@ -376,7 +396,8 @@ for i in date:
     returns_50abv.loc[i] = get_return(portfolio_50abv, i)
     returns_50blw.loc[i] = get_return(portfolio_50blw, i)
     returns_20.loc[i] = get_return(portfolio_20, i)
-````
+```
+
 - **Screening Strategy Performance**\
   ![Screening Performance](screening_performance.png)
 
@@ -393,13 +414,15 @@ for i in date:
 We select the **top 20%** and **bottom 20%** ranked stocks to build a **market-neutral long-short strategy** in both periods.
 
 - #### step 1.
-We split the timeline into training and testing periods to ensure robustness:
 
-    - **Training period**: 2011–2021/10  
-    - **Testing period**: 2021/11–2025/01
-  
-    - 用training period 資料重新訓練:
-````python
+  We split the timeline into training and testing periods to ensure robustness:
+
+      - **Training period**: 2011–2021/10
+      - **Testing period**: 2021/11–2025/01
+
+      - 用training period 資料重新訓練:
+
+```python
 cd_train = cd.loc[cd["date"]<"2022-01"] #訓練資料 2011~2021/10
 
 # X, y
@@ -414,18 +437,18 @@ X2 = cd[X_cols]
 # 預測
 y_pred = model.predict(X2)
 cd["return_pred"] = y_pred
-````
-
-
+```
 
 - #### step 2.
-回測策略 (參考3-1的程式碼)
+
+  回測策略 (參考 3-1 的程式碼)
 
 - **Final Strategy Backtest**\
   ![Strategy Performance](strat_perform.png)
 
 ---
-- Maximum drawdown 
+
+- Maximum drawdown
 
 ![Drawdown](drawdown.png)
 
@@ -434,11 +457,11 @@ cd["return_pred"] = y_pred
 #### 📈 Final Strategy Backtest (Train vs. Test)
 
 | Metric                | Train (2011–2021/10) | Test (2021/11–2025/01) |
-|------------------------|----------------------|-------------------------|
-| Annualized Return      | 0.0938               | 0.1699                  |
-| Annualized Volatility  | 0.0580               | 0.0694                  |
-| Sharpe Ratio           | 1.5733               | 2.2957                  |
-| Cumulative Return      | 0.2950               | 4.5512                  |
+| --------------------- | -------------------- | ---------------------- |
+| Annualized Return     | 0.0938               | 0.1699                 |
+| Annualized Volatility | 0.0580               | 0.0694                 |
+| Sharpe Ratio          | 1.5733               | 2.2957                 |
+| Cumulative Return     | 0.2950               | 4.5512                 |
 
 ---
 
@@ -448,3 +471,4 @@ cd["return_pred"] = y_pred
 git clone https://github.com/your_username/suprise-index-investment-strategy.git
 cd suprise-index-investment-strategy
 jupyter notebook strategy_pipeline.ipynb
+```
