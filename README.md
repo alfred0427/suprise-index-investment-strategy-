@@ -248,7 +248,7 @@ y_pred = model.predict(X)
 
 ![Linear Model Output](output.png)
 
-- **預測與真實的相關係數 r = 0.1007, p-value = 8.374e-91**\
+- **預測與真實的相關係數 r = 0.1007, p-value = 8.374e-91**\  
 
 ### 2.各變數相關性
 
@@ -257,8 +257,8 @@ y_pred = model.predict(X)
 ---
 
 ### 3. Industry-Level Correlation Analysis
+![Variables corr](industry_corr.png)
 
-We examine how different sectors respond to surprise indices.
 
 ---
 
@@ -465,10 +465,3 @@ cd["return_pred"] = y_pred
 
 ---
 
-## ▶️ Run This Project
-
-```bash
-git clone https://github.com/your_username/suprise-index-investment-strategy.git
-cd suprise-index-investment-strategy
-jupyter notebook strategy_pipeline.ipynb
-```
