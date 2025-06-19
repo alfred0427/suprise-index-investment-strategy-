@@ -201,7 +201,8 @@ for stock_name in tqdm(df["名稱"], desc="分析進度"):
     except Exception as e:
         print(f" {stock_name} 發生錯誤：{e}")
 ````
-\n
+### 變數分布型態
+![Variable distribution](distriburion.png)
 
 ## 三、相關性檢驗
 ### 1. 📉 Linear Model for Initial Variable Filtering
@@ -230,21 +231,24 @@ model.fit(X, y)
 # 預測
 y_pred = model.predict(X)
 ````
+![Linear Model Output](output.png)  
+
 -  **預測與真實的相關係數 r = 0.1007, p-value = 8.374e-91**\
-![Linear Model Output](output.png)
+  
 
-
+### 2.各變數相關性
+![Variables corr](muti_variable.png)  
 
 ---
 
-### 2. Industry-Level Correlation Analysis
+### 3. Industry-Level Correlation Analysis
 We examine how different sectors respond to surprise indices.
 
 
 
 ---
 
-### 3. Feature Importance via Random Forest
+### 4. Feature Importance via Random Forest
 We apply Random Forest to further assess variable importance and capture nonlinear relationships.
 ````python
 X_cols = [
