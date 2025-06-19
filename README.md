@@ -221,7 +221,7 @@ for stock_name in tqdm(df["名稱"], desc="分析進度"):
 
 ## 三、相關性檢驗
 
-### 1. 📉 Linear Model for Initial Variable Filtering
+### 1. 📉 線性模型：多元回歸
 
 We first use a simple linear regression model to detect preliminary relationships between surprise indices and stock/sector returns.
 
@@ -254,21 +254,21 @@ y_pred = model.predict(X)
 
 - **預測與真實的相關係數 r = 0.1007, p-value = 8.374e-91**\  
 
-### 2.各變數相關性
+### 2.各變數相關係數
 
 ![Variables corr](muti_variable.png)
 
 ---
 
-### 3. Industry-Level Correlation Analysis
+### 3. Industry-Level 的相關係數
 [Variables corr](industry_corr.png)
 
 
 ---
 
-### 4. Feature Importance via Random Forest
+### 4. 機器學習模型：隨機森林
 
-We apply Random Forest to further assess variable importance and capture nonlinear relationships.
+We apply Random Forest to further  capture nonlinear relationships and assess variable importance.
 
 ```python
 X_cols = [
@@ -312,7 +312,7 @@ clf.fit(X_train, y_train)
 
 ```
 
-- **Random Forest results**
+- **Random Forest 結果**
 
 
   
@@ -340,7 +340,7 @@ clf.fit(X_train, y_train)
 
 ## 三、策略建構
 
-### 1. Simple screening
+### 1. 簡單門檻值策略
 
 在驗證驚奇指標對於單季報酬有預測能力以後，我們先使用不同預測分數的門檻值來動態更新投資組合。\
 這邊用 for loop 跑過回測期間的每一天，如果當天有公司公布財務報表，以下程式碼就會用他對應的驚奇指數來判斷是否將其加入投資組合，每次加入為期一季。最後再簡單平均當天持有的所有股票報酬率。
@@ -415,7 +415,7 @@ for i in date:
 
 ---
 
-## 2. Final Strategy: Long-Short Top/Bottom 20%
+## 2. 最終策略: 80-20 對沖策略
 
 We select the **top 20%** and **bottom 20%** ranked stocks to build a **market-neutral long-short strategy** in both periods.
 
@@ -460,7 +460,7 @@ cd["return_pred"] = y_pred
 
 #### 📈 Final Strategy Backtest (Train vs. Test)
 
-| Metric                | Train (2011–2021/10) | Test (2021/11–2025/01) |
+| Metric                |Test (2021/11–2025/01)| Train (2011/11–2021/10)   |
 | --------------------- | -------------------- | ---------------------- |
 | Annualized Return     | 0.0938               | 0.1699                 |
 | Annualized Volatility | 0.0580               | 0.0694                 |
