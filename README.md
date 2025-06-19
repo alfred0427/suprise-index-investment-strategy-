@@ -36,7 +36,10 @@ import seaborn as sns
 SurpriseAnalyzer 類別是一個針對台灣股票進行財報「驚奇指標分析」的工具。給定一家公司名稱，它會自動讀取相關財報數據（如 EPS、毛利率、ROA 等）與股價，計算財報公布前後的季報酬，並標準化各指標變動，進一步推算每季的「驚奇指標」── 即財報表現與市場預期落差。
 參考 _Piotroski F-score_，我們將財報的驚奇程度用六個關鍵財務指標來衡量，分別是稅前 ROA、EPS、Gross profit、Operatiin Cash flow、current ratio.並且分別進行以下計算轉換為驚奇指數:
 - _驚奇指數 = 本季與去年度同季財務指標變化量 − 上季財報公布日後一天⾄財報⽇前一天的股價報酬率_
-  
+
+
+
+
 ```python
 
 class SurpriseAnalyzer:
@@ -170,6 +173,7 @@ class SurpriseAnalyzer:
 
 
 ```
+</div> 
 
 ### 物件輸出範例：以台泥為例
 
@@ -257,7 +261,7 @@ y_pred = model.predict(X)
 ---
 
 ### 3. Industry-Level Correlation Analysis
-![Variables corr](industry_corr.png)
+[Variables corr](industry_corr.png)
 
 
 ---
@@ -308,22 +312,24 @@ clf.fit(X_train, y_train)
 
 ```
 
-- **Random Forest results**\
-  ![Random Forest Model results](image.png)\
-  可以看到 f-score 顯著大於 0.33 表示有一定預測能力。
-- **Variable Importance**\
-  ![Variable Importance](variable_impo.png)\
-  與線性模型結果一致，可以確認營收指標的預測能力較為佳。
+- **Random Forest results**
 
-- **Feature Heatmap**\
+
+  
+<p align="center">
+　<img src="./image.png" width="45%"/>
+  <img src="./variable_impo.png" width="45%"/>
+  
+   - 可以看到 f-score 為0.41 顯著大於 0.33 表示有一定預測能力。而變數重要性與線性模型結果一致，可以確認營收指標的預測能力較為佳。
+  
+</p>
+
+---
   ![Random Forest Heatmap](randomforest_heat.png)\
-  進一步從分類熱度圖可以看出，隨機森林模型在捕捉預測優質股票的表現比線性模型較佳。
+  分類熱度圖可以看出，右下角預測上漲與實際上漲樣本數重疊最多，表示隨機森林模型在捕捉預測優質股票的表現比線性模型較佳。
 
-### 5.模型比較：預測值前 25% vs 後 25%
-
-```python
-
-```
+### 5.兩個模型比較：
+因為決策樹模型和線性模型一個是分類模型一個是回歸模型，沒有直接比較的依據，故我們採去預測值前 25% vs 後 25%的預測報酬率來作為比較依據
 
 - Muti Linear Model\
   ![Muti Linear Model results](lr.png)
