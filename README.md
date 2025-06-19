@@ -306,11 +306,12 @@ clf.fit(X_train, y_train)
   進一步從分類熱度圖可以看出，隨機森林模型在捕捉預測優質股票的表現比線性模型較佳。
 
 ### 5.模型比較
-
+- 預測值前25% vs 後25%
 ````python
 
 ````
-![Random Forest Model results](image.png)\
+![Muti Linear Model results](kr.png)\
+![Random Forest Model results](rdf.png)\
 
 ---
 
