@@ -327,7 +327,7 @@ clf.fit(X_train, y_train)
 ---
   ![Random Forest Heatmap](randomforest_heat.png)\
   分類熱度圖可以看出，右下角預測上漲與實際上漲樣本數重疊最多，表示隨機森林模型在捕捉預測優質股票的表現比線性模型較佳。
-
+---
 ### 5.兩個模型比較：
 因為決策樹模型和線性模型一個是分類模型一個是回歸模型，沒有直接比較的依據，故我們採去預測值前 25% vs 後 25%的預測報酬率來作為比較依據
 
@@ -426,8 +426,6 @@ We select the **top 20%** and **bottom 20%** ranked stocks to build a **market-n
       - **Training period**: 2011–2021/10
       - **Testing period**: 2021/11–2025/01
 
-      - 用training period 資料重新訓練:
-
 ```python
 cd_train = cd.loc[cd["date"]<"2022-01"] #訓練資料 2011~2021/10
 
@@ -452,7 +450,7 @@ cd["return_pred"] = y_pred
 - **Final Strategy Backtest**\
   ![Strategy Performance](strat_perform.png)
 
----
+
 
 - Maximum drawdown
 
