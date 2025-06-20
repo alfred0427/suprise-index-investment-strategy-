@@ -325,18 +325,20 @@ clf.fit(X_train, y_train)
 </p>
 
 ---
-  ![Random Forest Heatmap](randomforest_heat.png)\
-  分類熱度圖可以看出，右下角預測上漲與實際上漲樣本數重疊最多，表示隨機森林模型在捕捉預測優質股票的表現比線性模型較佳。
----
+![Random Forest Heatmap](randomforest_heat.png)\
+分類熱度圖可以看出，右下角預測上漲與實際上漲樣本數重疊最多，表示隨機森林模型在預測優質股票的表現比預測劣質股票的表現佳。
+
 ### 5.兩個模型比較：
 因為決策樹模型和線性模型一個是分類模型一個是回歸模型，沒有直接比較的依據，故我們採去預測值前 25% vs 後 25%的預測報酬率來作為比較依據
 
-- Muti Linear Model\
-  ![Muti Linear Model results](lr.png)
-- Random Forest Model\
-  ![Random Forest Model results](rdf.png)
+- Muti Linear Model
+> ![Muti Linear Model results](lr.png)
+- Random Forest Model
+> ![Random Forest Model results](rdf.png)
 
-結果顯示
+🔍 隨機森林模型在區分高報酬與低報酬股票方面的分類效果明顯優於線性回歸，不論是平均、還是中位數報酬差距。若用來作為量化選股或資產配置依據，隨機森林提供更強的 alpha 識別能力。
+
+
 
 ---
 
