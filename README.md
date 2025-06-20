@@ -464,13 +464,25 @@ cd["y_pred"] = clf.predict(X_all)
 ---
 
 #### 📈策略表現(Train vs. Test)
+*Training period: 2011–2021/10
 
-| Metric                |Test (2021/11–2025/01)| Train (2011/11–2021/10)   |
-| --------------------- | -------------------- | ---------------------- |
-| Annualized Return     | 0.0938               | 0.1699                 |
-| Annualized Volatility | 0.0580               | 0.0694                 |
-| Sharpe Ratio          | 1.5733               | 2.2957                 |
-| Cumulative Return     | 0.2950               | 4.5512                 |
+| Metric                 | 80-20 Strat | Benchmark (Equal-weight) |
+|------------------------|-------------|---------------------------|
+| Annualized Return      | 0.2003      | 0.0615                    |
+| Annualized Volatility  | 0.0804      | 0.1258                    |
+| Sharpe Ratio           | 2.3100      | 0.5379                    |
+| Cumulative Return      | 4.9538      | 0.8764                    |
+
+---
+
+*Testing period: 2021/11–2025/01
+| Metric                 | 80-20 Strat | Benchmark (Equal-weight) |
+|------------------------|-------------|---------------------------|
+| Annualized Return      | 0.1462      | 0.0845                    |
+| Annualized Volatility  | 0.0673      | 0.1412                    |
+| Sharpe Ratio           | 2.0616      | 0.6460                    |
+| Cumulative Return      | 0.5347      | 0.3240                    |
+
 
 ---
 
