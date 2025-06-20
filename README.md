@@ -426,26 +426,26 @@ for i in date:
 
 - #### step 1.
 
-  我們將整體樣本時間線切割為訓練期與測試期，以確保策略的穩健性：
+我們將整體樣本時間線切割為訓練期與測試期，以確保策略的穩健性：
 
       - **Training period**: 2011–2021/10
       - **Testing period**: 2021/11–2025/01
 
+* 重新用randomforest針對訓練資料訓練：
 ```python
-cd_train = cd.loc[cd["date"]<"2022-01"] #訓練資料 2011~2021/10
+cd_train = cd.loc[cd["date"]<="2021-10"] #訓練資料 2011~2021/10
 
-# X, y
-x = cd_train[X_cols]
-y = cd_train["this_season_return"]
+# X, y 資料
+X_train = cd_train[X_cols]
+y_train = cd_train["y_class"]
 
-# 建立並訓練模型
-model = LinearRegression()
-model.fit(x, y)
+# 建立並訓練分類模型
+clf = RandomForestClassifier(n_estimators=100, min_samples_leaf=3, random_state=42)
+clf.fit(X_train, y_train)
 
-X2 = cd[X_cols]
-# 預測
-y_pred = model.predict(X2)
-cd["return_pred"] = y_pred
+# 對所有樣本預測分類
+X_all = cd[X_cols]
+cd["y_pred"] = clf.predict(X_all)
 ```
 
 - #### step 2.
